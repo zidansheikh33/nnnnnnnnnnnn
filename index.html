@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="x-ogp-key" content="f1aca6cb-4ba0-431a-a591-044a367ca327" id="ogp-key-meta" />
+<script src="https://sdk.play.fun"></script>
+<title>Neon Spore Idle</title>
+
+<style>
+html, body {
+margin: 0;
+height: 100%;
+overflow: hidden;
+font-family: Inter, system-ui, Arial, sans-serif;
+background: #070b1a;
+color: #f5f7ff;
+}
+
+.wrap {
+height: 100vh;
+max-width: 1180px;
+margin: 0 auto;
+padding: 8px;
+display: grid;
+grid-template-columns: 1.1fr 0.9fr;
+gap: 8px;
+}
+
+.panel {
+background: linear-gradient(180deg, #111b3f, #0b1230);
+border: 1px solid rgba(111, 146, 255, .35);
+border-radius: 12px;
+padding: 8px;
+box-shadow: 0 8px 22px rgba(0,0,0,.3);
+min-height: 0;
+}
+
+h1 { margin: 0; font-size: 18px; }
+.sub { margin-top: 2px; font-size: 11px; color: #a9bce8; }
+
+.status {
+margin-top: 6px;
+font-size: 11px;
+border: 1px solid rgba(111,146,255,.35);
+background: #1a2a63;
+border-radius: 8px;
+padding: 6px 8px;
+color: #e6efff;
+}
+
+.stats {
+margin-top: 6px;
+display: grid;
+grid-template-columns: repeat(2, minmax(120px, 1fr));
+gap: 6px;
+}
+
+.stat {
+background: #0d1738;
+border: 1px solid #253f80;
+border-radius: 8px;
+padding: 6px 8px;
+}
+
+.k { font-size: 10px; color: #a9bce8; }
+.v { font-size: 16px; font-weight: 700; margin-top: 1px; }
+
+.tap-zone {
+margin-top: 6px;
+height: min(31vh, 230px);
+border-radius: 10px;
+border: 1px solid rgba(130, 255, 180, .35);
+background:
+radial-gradient(circle at 70% 20%, rgba(111, 255, 188, .22), transparent 36%),
+linear-gradient(145deg, #0f2f4d, #18486b);
+display: flex;
+align-items: center;
+justify-content: center;
+position: relative;
+overflow: hidden;
+}
+
+.orb-btn {
+width: min(21vw, 126px);
+height: min(21vw, 126px);
+border-radius: 999px;
+border: 2px solid #d7ffe8;
+font-size: 42px;
+cursor: pointer;
+background: radial-gradient(circle at 35% 25%, #c8ffe0 0%, #2ee58a 58%, #0f9f56 100%);
+color: #07331d;
+box-shadow: 0 8px 22px rgba(46,229,138,.35);
+transition: transform .08s ease;
+user-select: none;
+}
+
+.orb-btn:active { transform: scale(.95); }
+
+.float {
+position: absolute;
+font-weight: 800;
+color: #bbf7d0;
+text-shadow: 0 0 10px rgba(46,229,138,.75);
+pointer-events: none;
+animation: up .7s ease-out forwards;
+font-size: 14px;
+}
+
+@keyframes up {
+from { opacity: 1; transform: translateY(0); }
+to { opacity: 0; transform: translateY(-46px); }
+}
+
+.toolbar {
+margin-top: 6px;
+display: flex;
+gap: 6px;
+flex-wrap: wrap;
+}
+
+.sbtn {
+font-size: 11px;
+padding: 6px 8px;
+border-radius: 8px;
+border: 1px solid #345aa8;
+background: #1e3d80;
+color: #fff;
+cursor: pointer;
+}
+
+.right-col {
+height: 100%;
+min-height: 0;
+display: grid;
+grid-template-rows: 1fr auto;
+gap: 8px;
+}
+
+.shop {
+min-height: 0;
+max-height: calc(100vh - 24px);
+overflow-y: auto;
+padding-right: 2px;
+}
+
+.row {
+display: grid;
+grid-template-columns: 1fr auto;
+gap: 6px;
+padding: 7px;
+margin-bottom: 6px;
+border-radius: 8px;
+border: 1px solid #2a467f;
+background: #0d1a3f;
+}
+
+.name { font-size: 13px; font-weight: 700; }
+.desc { font-size: 11px; color: #a9bce8; }
+
+.buy {
+min-width: 84px;
+font-size: 11px;
+padding: 6px 8px;
+border: 0;
+border-radius: 7px;
+background: linear-gradient(180deg, #86efac, #22c55e);
+color: #063117;
+font-weight: 700;
+cursor: pointer;
+}
+
+.buy:disabled { opacity: .45; cursor: not-allowed; }
+
+.prestige-btn {
+width: 100%;
+font-size: 12px;
+padding: 8px 10px;
+border: 0;
+border-radius: 8px;
+font-weight: 800;
+background: linear-gradient(180deg, #fde68a, #f59e0b);
+color: #3f2a00;
+cursor: pointer;
+}
+
+@media (max-width: 900px) {
+html, body { overflow: auto; }
+.wrap { height: auto; grid-template-columns: 1fr; }
+.shop { max-height: none; overflow: visible; }
+.orb-btn { width: 120px; height: 120px; font-size: 38px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="panel">
+<h1>🧪 Neon Spore Idle</h1>
+<div class="sub">Inspired build • own style • leaderboard sync ready</div>
+
+<div id="sdkStatus" class="status">SDK: initializing...</div>
+
+<div class="stats">
+<div class="stat"><div class="k">Spores</div><div class="v" id="spores">0</div></div>
+<div class="stat"><div class="k">Spores / Tap</div><div class="v" id="tap">1</div></div>
+<div class="stat"><div class="k">Spores / Sec</div><div class="v" id="sps">0</div></div>
+<div class="stat"><div class="k">Ascend Multiplier</div><div class="v" id="mult">1.00x</div></div>
+</div>
+
+<div class="tap-zone" id="zone">
+<button id="tapBtn" class="orb-btn">🧪</button>
+</div>
+
+<div class="toolbar">
+<button class="sbtn" id="syncBtn">☁️ Sync</button>
+<button class="sbtn" id="endBtn">🏁 End</button>
+<button class="sbtn" id="saveBtn">💾 Save</button>
+<button class="sbtn" id="resetBtn">🧹 Reset</button>
+</div>
+</section>
+
+<section class="right-col">
+<div class="panel">
+<h3 style="margin:0 0 8px;font-size:16px">🛒 Lab Upgrades</h3>
+<div id="shop" class="shop"></div>
+</div>
+
+<div class="panel">
+<h3 style="margin:0 0 4px;font-size:16px">🚀 Ascend</h3>
+<div class="sub">Unlock at 40,000 spores (+12% permanent multiplier)</div>
+<button id="prestigeBtn" class="prestige-btn">Ascend (+12%)</button>
+</div>
+</section>
+</div>
+
+<script>
+// ===== Play.fun SDK =====
+const GAME_ID = "0230bc14-21e6-4bba-b9bf-d58d5d9113c4";
+let ogp = null;
+let pendingPoints = 0;
+let syncInFlight = false;
+
+async function initSDK(){
+try{
+if(typeof OpenGameSDK === "undefined"){
+sdkStatus.textContent = "SDK: not loaded";
+return;
+}
+ogp = new OpenGameSDK({
+ui: { usePointsWidget: true, theme: "system" },
+logLevel: "warn"
+});
+await ogp.init({ gameId: GAME_ID });
+sdkStatus.textContent = "SDK: connected ✅";
+}catch(e){
+console.error("SDK init failed:", e);
+sdkStatus.textContent = "SDK init failed: " + (e?.message || "unknown");
+}
+}
+
+async function safeAddPoints(points){
+if(!ogp || points <= 0) return false;
+try{
+await ogp.addPoints(Math.floor(points));
+return true;
+}catch(e){
+console.warn("addPoints failed:", e);
+return false;
+}
+}
+
+async function flushPoints(reason="auto"){
+if(syncInFlight || !ogp) return;
+const pts = Math.floor(pendingPoints);
+if(pts <= 0) return;
+syncInFlight = true;
+
+const ok = await safeAddPoints(pts);
+if(ok){
+pendingPoints -= pts;
+if(pendingPoints < 0) pendingPoints = 0;
+save();
+sdkStatus.textContent = `SDK: synced ${pts} (${reason}) ✅`;
+}else{
+sdkStatus.textContent = `SDK: sync pending (${reason})`;
+}
+
+syncInFlight = false;
+}
+
+async function endRun(){
+await flushPoints("end-run");
+if(!ogp) return;
+try{
+await ogp.endGame({
+score: Math.floor(S.spores),
+meta: { ascend: S.ascend }
+});
+sdkStatus.textContent = "SDK: endGame sent ✅";
+}catch(e){
+console.warn("endGame failed:", e);
+}
+}
+
+// ===== Game =====
+const U = [
+{id:"tube", name:"Better Tube", desc:"+1 Tap", base:20, scale:1.20, tap:1, sps:0},
+{id:"nutrient", name:"Nutrient Mix", desc:"+1 / sec", base:35, scale:1.22, tap:0, sps:1},
+{id:"pump", name:"Micro Pump", desc:"+2 / sec", base:90, scale:1.24, tap:0, sps:2},
+{id:"blade", name:"Plasma Cutter", desc:"+3 Tap", base:160, scale:1.25, tap:3, sps:0},
+{id:"reactor", name:"Nano Reactor", desc:"+5 / sec", base:340, scale:1.26, tap:0, sps:5},
+{id:"core", name:"Core Booster", desc:"+6 Tap", base:620, scale:1.27, tap:6, sps:0},
+{id:"cluster", name:"Spore Cluster", desc:"+10 / sec", base:1100, scale:1.28, tap:0, sps:10},
+{id:"drone", name:"Harvest Drone", desc:"+18 / sec", base:2000, scale:1.29, tap:0, sps:18},
+{id:"quantum", name:"Quantum Tap", desc:"+12 Tap", base:3300, scale:1.30, tap:12, sps:0},
+{id:"lab", name:"Dark Lab", desc:"+30 / sec", base:6000, scale:1.31, tap:0, sps:30}
+];
+
+const SAVE_KEY = "neonSporeIdle_v1";
+const S = {
+spores: 0,
+multiplier: 1,
+ascend: 0,
+upgrades: {},
+baseAuto: 1
+};
+
+const lvl = id => S.upgrades[id] || 0;
+const cost = u => Math.floor(u.base * Math.pow(u.scale, lvl(u.id)));
+
+function tapVal(){
+let t = 1;
+for(const u of U) t += lvl(u.id) * u.tap;
+return t * S.multiplier;
+}
+
+function spsVal(){
+let p = S.baseAuto;
+for(const u of U) p += lvl(u.id) * u.sps;
+return p * S.multiplier;
+}
+
+function nf(n){
+if(n < 1000) return Math.floor(n).toString();
+const u = ["K","M","B","T","Qa"];
+let i = -1;
+while(n >= 1000 && i < u.length - 1){ n /= 1000; i++; }
+return n.toFixed(2) + u[i];
+}
+
+function addPts(x){ if(x > 0) pendingPoints += x; }
+
+function floatPlus(text,x,y){
+const f = document.createElement("div");
+f.className = "float";
+f.textContent = text;
+f.style.left = x + "px";
+f.style.top = y + "px";
+zone.appendChild(f);
+setTimeout(()=>f.remove(),700);
+}
+
+function save(){
+localStorage.setItem(SAVE_KEY, JSON.stringify({ ...S, pendingPoints }));
+}
+
+function load(){
+const raw = localStorage.getItem(SAVE_KEY);
+if(!raw) return;
+try{
+const d = JSON.parse(raw);
+Object.assign(S, d);
+pendingPoints = d.pendingPoints || 0;
+}catch{}
+}
+
+function render(){
+spores.textContent = nf(S.spores);
+tap.textContent = nf(tapVal());
+sps.textContent = nf(spsVal());
+mult.textContent = S.multiplier.toFixed(2) + "x";
+
+shop.innerHTML = "";
+for(const u of U){
+const c = cost(u), l = lvl(u.id);
+const row = document.createElement("div");
+row.className = "row";
+row.innerHTML = `<div>
+<div class="name">${u.name} <span style="font-size:11px;color:#a9bce8">(Lv ${l})</span></div>
+<div class="desc">${u.desc}</div>
+</div>`;
+
+const b = document.createElement("button");
+b.className = "buy";
+b.textContent = "Buy " + nf(c);
+b.disabled = S.spores < c;
+b.onclick = ()=>{
+if(S.spores < c) return;
+S.spores -= c;
+S.upgrades[u.id] = l + 1;
+save();
+render();
+};
+
+row.appendChild(b);
+shop.appendChild(row);
+}
+
+prestigeBtn.disabled = S.spores < 40000;
+prestigeBtn.style.opacity = prestigeBtn.disabled ? ".5" : "1";
+}
+
+tapBtn.addEventListener("click",(e)=>{
+const gain = tapVal();
+S.spores += gain;
+addPts(gain);
+
+const r = zone.getBoundingClientRect();
+floatPlus("+" + Math.floor(gain), e.clientX - r.left, e.clientY - r.top);
+
+render();
+});
+
+prestigeBtn.addEventListener("click",()=>{
+if(S.spores < 40000) return;
+if(!confirm("Ascend করলে current spores + upgrades reset হবে. Continue?")) return;
+
+S.ascend += 1;
+S.multiplier = +(S.multiplier * 1.12).toFixed(4);
+S.spores = 0;
+S.upgrades = {};
+save();
+render();
+alert("Ascend complete! Multiplier: " + S.multiplier.toFixed(2) + "x");
+});
+
+syncBtn.addEventListener("click",()=>flushPoints("manual"));
+endBtn.addEventListener("click",endRun);
+saveBtn.addEventListener("click",()=>{ save(); alert("Saved ✅"); });
+resetBtn.addEventListener("click",()=>{
+if(!confirm("সব reset হবে, sure?")) return;
+localStorage.removeItem(SAVE_KEY);
+location.reload();
+});
+
+// Main loop
+setInterval(()=>{
+const g = spsVal();
+S.spores += g;
+addPts(g);
+render();
+},1000);
+
+// Faster leaderboard refresh
+setInterval(()=>flushPoints("fast"),2500);
+setInterval(()=>endRun(),15000);
+setInterval(save,10000);
+
+document.addEventListener("visibilitychange",()=>{
+if(document.visibilityState === "hidden"){
+flushPoints("hidden");
+save();
+}
+});
+
+window.addEventListener("beforeunload",()=>{
+flushPoints("unload");
+save();
+});
+
+(async function boot(){
+load();
+render();
+await initSDK();
+})();
+</script>
+</body>
+</html>
